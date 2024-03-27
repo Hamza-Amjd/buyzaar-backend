@@ -127,5 +127,18 @@ router.delete('/deleteitem/:id', async (req, res) => {
     }
 })
 
+// function to insert multiple movies from json file
+// const insertitems = async () => {
+//     try {
+//         const docs = await items.insertMany(products);
+//         return Promise.resolve(docs);
+//     } catch (err) {
+//         return Promise.reject(err)
+//     }
+// };
+
+// insertMovies()
+//     .then((docs) => console.log(docs))
+//     .catch((err) => console.log(err))
 
 module.exports = router
