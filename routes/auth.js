@@ -16,15 +16,15 @@ const sendVerificationEmail=async(email,verificationToken)=>{
     service:"gmail",
     auth:{
       user:"hamzahumpty1@gmail.com",
-      pass:"wipgukncgyenngzi"
+      pass:"yurhzjgxpdmqampn"
     }
   })
   //compose email message
   const mailOptions={
-    from:"amazon.com",
+    from:"ShopX.com",
     to:email,
     subject:"Email Verification",
-    text:`Please click the link to verify email : http://localhost:5000/api/auth/verify/${verificationToken}`
+    text:`Please click the link to verify email : https://shopro-backend.vercel.app/api/auth/verify/${verificationToken}`
   };
   try {
     await transporter.sendMail(mailOptions)
