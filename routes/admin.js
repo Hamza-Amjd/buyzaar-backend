@@ -5,15 +5,60 @@ const { body, validationResult } = require('express-validator');
 const items = require('../models/items');
 
 
-// ROUTE 1: Get All the items using: GET "/api/admin/fetchallitems". Login required
-router.get('/fetchallitems', async (req, res) => {
+// ROUTE 1: Get All the items using: GET "/api/admin/items" with page ,limit ,search ,sort and  category query parameters 
+router.get('/items', async (req, res) => {
     try {
-        let item = await items.where(_id='64%')
-        res.json(item)
-    } catch (error) {
-        console.error(error.message);
-        res.status(500).send("Internal Server Error");
-    }
+		const page = parseInt(req.query.page) - 1 || 0;
+		const limit = parseInt(req.query.limit) || 5;
+		const search = req.query.search || "";
+		let sort = req.query.sort || "rating";
+		let category = req.query.category || "All";
+
+		const categoryOptions = [
+			"women's clothing",
+            "electronics",
+            "jewelery",
+            "men's clothing",
+		];
+
+		category === "All"
+			? (category = [...categoryOptions])
+			: (category = req.query.category.split(","));
+		req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+
+		let sortBy = {};
+		if (sort[1]) {
+			sortBy[sort[0]] = sort[1];
+		} else {
+			sortBy[sort[0]] = "asc";
+		}
+
+		const item = await items.find({ title: { $regex: search, $options: "i" } })
+			.where("category")
+			.in([...category])
+			.sort(sortBy)
+			.skip(page * limit)
+			.limit(limit);
+
+		const total = await items.countDocuments({
+			category: { $in: [...category] },
+			title: { $regex: search, $options: "i" },
+		});
+
+		const response = {
+			error: false,
+			total,
+			page: page + 1,
+			limit,
+			categories: categoryOptions,
+			item,
+		};
+
+		res.status(200).json(response);
+	} catch (err) {
+		console.log(err);
+		res.status(500).json({ error: true, message: "Internal Server Error" });
+	}
 })
 
 // ROUTE 2: Add a new item using: POST "/api/admin/additem"
@@ -81,5 +126,6 @@ router.delete('/deleteitem/:id', async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 })
+
 
 module.exports = router
