@@ -29,7 +29,10 @@ const itemSchema = new Schema(
     },
     quantity:{
       type:Number
-    }
+    },
+    soldQuantity:{
+      type:Number
+    },
   },
   { timestamps: true }
 );
