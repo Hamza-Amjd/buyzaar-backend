@@ -61,16 +61,15 @@ router.get('/items', async (req, res) => {
 	}
 })
 
-// ROUTE 2: Add a new item using: POST "/api/admin/additem"
+// ROUTE 2: Add a new item using: POST "/api/admin/additem"  
 router.post('/additem',  [
     body('title', 'Enter a valid title').isLength({ min: 3 }),
     body('price', 'Enter a valid price'),
     body('image','Enter a valid image').isLength({ min: 2 }),
-    body('description', 'Description must be atleast 5 characters').isLength({ min: 5 }),
-    body("rating",'rating is not valid')]
+    body('description', 'Description must be atleast 5 characters').isLength({ min: 5 })]
     , async (req, res) => {
         try {
-            const { title, description, price, image, category, rating } = req.body;
+            const { title, description, price, image, category, rating,fileKey } = req.body;
 
             // If there are errors, return Bad request and the errors
             const errors = validationResult(req);
@@ -78,7 +77,7 @@ router.post('/additem',  [
                 return res.status(400).json({ errors: errors.array() });
             }
             const item = new items({
-                title, description, price, image, category,rating
+                title, description, price, image, category,rating,fileKey
             })
             const saveditem = await item.save()
 
@@ -90,7 +89,7 @@ router.post('/additem',  [
         }
     })
 
-// ROUTE 3: Update an existing item using: PUT "/api/admin/updateitem". Login required
+// ROUTE 3: Update an existing item using: PUT "/api/admin/updateitem"
 router.put('/updateitem/:id', async (req, res) => {
     const { title, description, price,image } = req.body;
     try {
@@ -108,11 +107,11 @@ router.put('/updateitem/:id', async (req, res) => {
         res.json({ item });
     } catch (error) {
         console.error(error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("Internal Server Error",error.message);
     }
 })
 
-// ROUTE 4: Delete an existing item using: DELETE "/api/admin/deleteitem". Login required
+// ROUTE 4: Delete an existing item using: DELETE "/api/admin/deleteitem"
 router.delete('/deleteitem/:id', async (req, res) => {
     try {
         // Find the item to be delete and delete it

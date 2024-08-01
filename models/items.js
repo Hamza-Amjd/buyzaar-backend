@@ -20,10 +20,8 @@ const itemSchema = new Schema(
       type: String,
       required: true
     },
-    category: {
-      type: String,
-      required: true
-    },
+    category:String,
+    fileKey: String,
     rating: {
       rate:{
         type: String
